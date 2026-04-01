@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD Miembros</title>
+</head>
+<body>
+
+<h1>CRUD Miembros</h1>
+
+<input id="nombre" placeholder="Nombre">
+<input id="cedula" placeholder="Cédula">
+<input id="rol" placeholder="Rol">
+
+<button onclick="crear()">Crear</button>
+
+<h2>Lista</h2>
+<ul id="lista"></ul>
+
+<script>
+
+const url = "https://localhost:7117/api/Miembros";
+
+async function obtener() {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    data.forEach(x => {
+        lista.innerHTML += `
+            <li>
+                ${x.nombre} - ${x.cedula} - ${x.rol}
+                <button onclick="eliminar(${x.id})">Eliminar</button>
+            </li>
+        `;
+    });
+}
+
+async function crear() {
+    const nombre = document.getElementById("nombre").value;
+    const cedula = document.getElementById("cedula").value;
+    const rol = document.getElementById("rol").value;
+
+    await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nombre, cedula, rol })
+    });
+
+    obtener();
+}
+
+async function eliminar(id) {
+    await fetch(url + "/" + id, {
+        method: "DELETE"
+    });
+
+    obtener();
+}
+
+obtener();
+
+</script>
+
+</body>
+</html>
